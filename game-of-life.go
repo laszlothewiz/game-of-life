@@ -43,11 +43,13 @@ type table map[coord]tableElem
 //calculating the next generation
 //input: list of coordinates where the alive cells are
 //output: list of coordinates of the alive cells in the next generation
-func nextGen(cells *inpOut) inpOut {
+func nextGen(cells inpOut) inpOut {
+//note: type inpOut is a slice, which is passed by reference so no need to use pointers 
+	
 	T := make(table) //creating an empty table representing the playing field
 
 	//iterating over the list of alive cells and building a map (table) of cells and neighbor counts
-	for _, cc := range *cells { //we discard the index, only need the current element's coordinates
+	for _, cc := range cells { //we discard the index, only need the current element's coordinates
 
 		//Marking the element as `alive`
 		//T[cc] might or might not exists at this point but
@@ -79,7 +81,7 @@ func nextGen(cells *inpOut) inpOut {
 	//equal to the number of cells in the previous generation.
 	//This is done to minimize the unnecessary copy operations when an `append` operation
 	//exceeds the capacity of the slice
-	out := make(inpOut, 0, len(*cells))
+	out := make(inpOut, 0, len(cells))
 
 	//iterating over the cellmap and generating a list of alive cells of the next generation
 	for cc, elem := range T {
@@ -107,7 +109,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	//running through `steps`(one of the input parameters) number of generations
 	for steps, _ := strconv.Atoi(r.FormValue("steps")); steps > 0; steps-- {
-		cellsList = nextGen(&cellsList)
+		cellsList = nextGen(cellsList)
 	}
 
 	//generating the JSON response
